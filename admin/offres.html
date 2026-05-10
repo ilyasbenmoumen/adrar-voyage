@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="alternate icon" href="../assets/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/favicon-32.png"><title>Offres — Admin</title><link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="admin-layout">
+<aside class="admin-sidebar">
+  <div class="sidebar-top">✈ <span>Aziza</span> Admin</div>
+  <nav class="sidebar-nav">
+    <div class="sb-sect">Principal</div>
+    <a href="dashboard.html" class="sb-link">📊 Tableau de bord</a>
+    <a href="reservations.html" class="sb-link">📋 Réservations</a>
+    <a href="clients.html" class="sb-link">👥 Clients</a>
+    <a href="offres.html" class="sb-link active">✈ Offres de voyage</a>
+    <div class="sb-sect">Compte</div>
+    <a href="#" class="sb-link" onclick="logout()">🚪 Déconnexion</a>
+  </nav>
+  <div class="sidebar-foot"><div class="sb-user"><div class="sb-av" id="sbAv">A</div><div><div class="sb-name" id="sbName">Admin</div><div class="sb-role" id="sbRole">Administrateur</div></div></div></div>
+</aside>
+<main class="admin-main">
+  <div class="admin-topbar"><h1>Gestion des Offres</h1><div class="topbar-right"><button class="notif"><span>🔔</span><span class="notif-dot"></span></button><a href="../index.html" style="font-size:.82rem;color:var(--primary);font-weight:600">← Site public</a></div></div>
+  <div class="admin-content">
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">Toutes les offres</div>
+        <div class="table-actions">
+          <select class="filter-sel" id="tf" onchange="render()">
+            <option value="">Tous types</option>
+            <option value="europe">Europe</option><option value="indonesia">Indonésie</option>
+            <option value="omra">Omra</option><option value="hajj">Hajj</option><option value="visa">Visa</option>
+          </select>
+          <button class="btn-add" onclick="openAdd()">+ Ajouter une offre</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table class="dt"><thead><tr><th>Nom de l'offre</th><th>Destination</th><th>Type</th><th>Durée</th><th>Prix (MAD)</th><th>Populaire</th><th>Actions</th></tr></thead><tbody id="oBody"></tbody></table></div>
+      <div style="padding:.8rem 0;font-size:.8rem;color:var(--muted-fg)" id="oCount"></div>
+    </div>
+  </div>
+</main>
+</div>
+<div class="modal-overlay" id="mo"><div class="modal" style="max-width:600px"><div class="modal-hd"><div class="modal-title" id="mTitle">Nouvelle offre</div><button class="modal-x" onclick="closeM()">✕</button></div><div id="mBody"></div></div></div>
+<script src="../js/main.js"></script>
+<script>
+if(localStorage.getItem('az_auth')!=='1') location.href='login.html';
+const user=JSON.parse(localStorage.getItem('az_user')||'{}');
+document.getElementById('sbAv').textContent=(user.name||'A')[0];
+document.getElementById('sbName').textContent=user.name||'Admin';
+document.getElementById('sbRole').textContent=user.role||'Administrateur';
+
+// Work on OFFERS array (in-memory + localStorage override)
+function getOffers(){return JSON.parse(localStorage.getItem('az_offers_custom')||'null')||OFFERS;}
+function saveOffers(o){localStorage.setItem('az_offers_custom',JSON.stringify(o));}
+
+function render(){
+  let offers=getOffers();
+  const tf=document.getElementById('tf').value;
+  if(tf) offers=offers.filter(o=>o.type===tf);
+  document.getElementById('oCount').textContent=offers.length+' offre(s)';
+  const types={europe:'Europe',indonesia:'Indonésie',omra:'Omra',hajj:'Hajj',visa:'Visa'};
+  document.getElementById('oBody').innerHTML=offers.map(o=>`<tr>
+    <td><strong>${o.name}</strong><br><span style="font-size:.73rem;color:var(--muted-fg)">${(o.features||[]).slice(0,2).join(' · ')}</span></td>
+    <td style="font-size:.85rem">${o.tag||'—'}</td>
+    <td style="font-size:.83rem">${types[o.type]||o.type}</td>
+    <td style="font-size:.83rem">${o.duration}</td>
+    <td><strong>${Number(o.price).toLocaleString('fr-MA')} MAD</strong></td>
+    <td>${o.popular?'<span style="color:var(--gold);font-weight:700">★ Oui</span>':'—'}</td>
+    <td><div class="act-btns">
+      <button class="btn-a ba-edit" onclick="openEdit('${o.id}')">✏️ Modifier</button>
+      <button class="btn-a ba-del" onclick="delOffer('${o.id}')">🗑</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function offerForm(o={}){
+  const types=[['europe','Europe'],['indonesia','Indonésie'],['omra','Omra'],['hajj','Hajj'],['visa','Visa']];
+  return `<form onsubmit="saveOffer(event,'${o.id||''}')">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Nom de l'offre *</label><input class="form-control" name="name" value="${o.name||''}" required placeholder="Ex: Paris Découverte"></div>
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Tag / Destination</label><input class="form-control" name="tag" value="${o.tag||''}" placeholder="Ex: Europe"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Type *</label><select class="form-control form-select" name="type" required>${types.map(([v,l])=>`<option value="${v}"${o.type===v?' selected':''}>${l}</option>`).join('')}</select></div>
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Durée</label><input class="form-control" name="duration" value="${o.duration||''}" placeholder="Ex: 7 jours"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Prix (MAD) *</label><input class="form-control" name="price" type="number" value="${o.price||''}" required min="0"></div>
+      <div><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Image URL</label><input class="form-control" name="img" value="${o.img||''}" placeholder="../assets/hero-paris.jpg"></div>
+    </div>
+    <div style="margin-bottom:1rem"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Inclusions (une par ligne)</label><textarea class="form-control" name="features" rows="3" placeholder="Vol direct&#10;Hôtel 4★&#10;Petit-déjeuner inclus">${(o.features||[]).join('\n')}</textarea></div>
+    <div style="margin-bottom:1.2rem;display:flex;align-items:center;gap:8px"><input type="checkbox" name="popular" id="popChk"${o.popular?' checked':''} style="accent-color:var(--gold);width:16px;height:16px"><label for="popChk" style="font-size:.85rem;font-weight:600;cursor:pointer">Marquer comme "Le plus populaire"</label></div>
+    <button type="submit" class="btn-submit">${o.id?'Enregistrer les modifications':'Créer l\'offre'}</button>
+  </form>`;
+}
+
+function openAdd(){document.getElementById('mTitle').textContent='Nouvelle offre';document.getElementById('mBody').innerHTML=offerForm();openM();}
+function openEdit(id){
+  const o=getOffers().find(x=>x.id===id);if(!o) return;
+  document.getElementById('mTitle').textContent='Modifier : '+o.name;
+  document.getElementById('mBody').innerHTML=offerForm(o);openM();
+}
+function saveOffer(e,existId){
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  const d=Object.fromEntries(fd);
+  d.price=Number(d.price);
+  d.popular=!!fd.get('popular');
+  d.features=d.features.split('\n').map(s=>s.trim()).filter(Boolean);
+  let offers=getOffers();
+  if(existId){const idx=offers.findIndex(o=>o.id===existId);if(idx>-1){offers[idx]={...offers[idx],...d};}}
+  else{d.id='OFF'+Date.now();offers.push(d);}
+  saveOffers(offers);closeM();render();
+}
+function delOffer(id){
+  if(!confirm('Supprimer cette offre ?')) return;
+  saveOffers(getOffers().filter(o=>o.id!==id));render();
+}
+function openM(){document.getElementById('mo').classList.add('open');}
+function closeM(){document.getElementById('mo').classList.remove('open');}
+document.getElementById('mo').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+function logout(){localStorage.removeItem('az_auth');localStorage.removeItem('az_user');location.href='login.html';}
+render();
+</script>
+</body>
+</html>

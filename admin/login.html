@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="alternate icon" href="../assets/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/favicon-32.png">
+  <title>Connexion Admin — Aziza Voyage</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-left">
+    <div style="position:relative;z-index:1;text-align:center">
+      <div style="font-size:3rem;margin-bottom:1rem">✈</div>
+      <div class="login-logo"><span>Aziza</span> Voyage</div>
+      <p class="login-tagline">Espace administratif — Gérez vos réservations, clients et offres en toute simplicité.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,.1);padding:10px 18px;border-radius:12px;text-align:center"><div style="font-size:1.4rem;font-weight:800;color:#fff">42+</div><div style="font-size:.72rem;color:rgba(255,255,255,.55)">Réservations</div></div>
+        <div style="background:rgba(255,255,255,.1);padding:10px 18px;border-radius:12px;text-align:center"><div style="font-size:1.4rem;font-weight:800;color:#fff">15</div><div style="font-size:.72rem;color:rgba(255,255,255,.55)">Offres actives</div></div>
+        <div style="background:rgba(255,255,255,.1);padding:10px 18px;border-radius:12px;text-align:center"><div style="font-size:1.4rem;font-weight:800;color:#fff">98%</div><div style="font-size:.72rem;color:rgba(255,255,255,.55)">Satisfaction</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-card">
+      <h2>Connexion</h2>
+      <p class="sub">Accédez à votre espace de gestion</p>
+      <div class="login-err" id="loginErr">⚠️ Identifiants incorrects. Réessayez.</div>
+      <form onsubmit="doLogin(event)">
+        <div style="margin-bottom:1rem"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Identifiant</label><input class="form-control" id="u" placeholder="admin" autocomplete="username"></div>
+        <div style="margin-bottom:1.5rem"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">Mot de passe</label><input class="form-control" id="p" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+        <button type="submit" class="btn-submit">Se connecter →</button>
+      </form>
+      <div class="login-hint" style="margin-top:1.2rem">
+        <strong>Démo :</strong> identifiant <code>admin</code> / mot de passe <code>admin123</code>
+      </div>
+      <div style="text-align:center;margin-top:1.2rem"><a href="../index.html" style="font-size:.83rem;color:var(--muted-fg)">← Retour au site</a></div>
+    </div>
+  </div>
+</div>
+<script src="../js/main.js"></script>
+<script>
+if(localStorage.getItem('az_auth')==='1') location.href='dashboard.html';
+function doLogin(e){
+  e.preventDefault();
+  const users=JSON.parse(localStorage.getItem('az_users')||'null')||[
+    {username:'admin',password:'admin123',role:'Administrateur',name:'Aziza Benali'},
+    {username:'agent',password:'agent123',role:'Agent',name:'Sara Filali'}
+  ];
+  localStorage.setItem('az_users',JSON.stringify(users));
+  const found=users.find(x=>x.username===document.getElementById('u').value.trim()&&x.password===document.getElementById('p').value);
+  if(found){localStorage.setItem('az_auth','1');localStorage.setItem('az_user',JSON.stringify(found));location.href='dashboard.html';}
+  else{const err=document.getElementById('loginErr');err.classList.add('show');setTimeout(()=>err.classList.remove('show'),3000);}
+}
+</script>
+</body>
+</html>

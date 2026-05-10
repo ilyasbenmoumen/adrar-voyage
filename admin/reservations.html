@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="alternate icon" href="../assets/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/favicon-32.png">
+  <title>Réservations — Admin Aziza Voyage</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="admin-sidebar">
+  <div class="sidebar-top">✈ <span>Aziza</span> Admin</div>
+  <nav class="sidebar-nav">
+    <div class="sb-sect">Principal</div>
+    <a href="dashboard.html" class="sb-link">📊 Tableau de bord</a>
+    <a href="reservations.html" class="sb-link active">📋 Réservations</a>
+    <a href="clients.html" class="sb-link">👥 Clients</a>
+    <a href="offres.html" class="sb-link">✈ Offres de voyage</a>
+    <div class="sb-sect">Compte</div>
+    <a href="#" class="sb-link" onclick="logout()">🚪 Déconnexion</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="sb-user"><div class="sb-av" id="sbAv">A</div><div><div class="sb-name" id="sbName">Admin</div><div class="sb-role" id="sbRole">Administrateur</div></div></div>
+  </div>
+</aside>
+<main class="admin-main">
+  <div class="admin-topbar">
+    <h1>Gestion des Réservations</h1>
+    <div class="topbar-right">
+      <button class="notif"><span>🔔</span><span class="notif-dot"></span></button>
+      <a href="../index.html" style="font-size:.82rem;color:var(--primary);font-weight:600">← Site public</a>
+    </div>
+  </div>
+  <div class="admin-content">
+    <div class="kpi-row" id="statsRow" style="grid-template-columns:repeat(5,1fr)"></div>
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">Toutes les réservations</div>
+        <div class="table-actions">
+          <input class="filter-in" id="searchIn" placeholder="🔍 Rechercher..." oninput="render()">
+          <select class="filter-sel" id="typeF" onchange="render()">
+            <option value="">Tous types</option>
+            <option value="europe">Europe</option><option value="indonesia">Indonésie</option>
+            <option value="omra">Omra</option><option value="hajj">Hajj</option><option value="visa">Visa</option>
+          </select>
+          <select class="filter-sel" id="statF" onchange="render()">
+            <option value="">Tous statuts</option>
+            <option value="pending">En attente</option><option value="confirmed">Confirmée</option>
+            <option value="done">Terminée</option><option value="cancelled">Annulée</option>
+          </select>
+          <button class="exp-btn" onclick="exportCSV()">⬇ CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table class="dt">
+        <thead><tr><th>Réf.</th><th>Client</th><th>Contact</th><th>Offre</th><th>Type</th><th>Pers.</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="resTbody"></tbody>
+      </table></div>
+      <div id="emptyMsg" class="hidden" style="text-align:center;padding:2rem;color:var(--muted-fg)">Aucune réservation trouvée.</div>
+      <div style="padding:.8rem 0;font-size:.8rem;color:var(--muted-fg)" id="countLbl"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="mo">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title" id="mTitle">Réservation</div><button class="modal-x" onclick="closeM()">✕</button></div>
+    <div id="mBody"></div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+if(localStorage.getItem('az_auth')!=='1') location.href='login.html';
+const user=JSON.parse(localStorage.getItem('az_user')||'{}');
+document.getElementById('sbAv').textContent=(user.name||'A')[0];
+document.getElementById('sbName').textContent=user.name||'Admin';
+document.getElementById('sbRole').textContent=user.role||'Administrateur';
+
+function getFiltered(){
+  let list=DB.get('az_reservations');
+  const q=document.getElementById('searchIn').value.toLowerCase();
+  const t=document.getElementById('typeF').value;
+  const s=document.getElementById('statF').value;
+  if(q) list=list.filter(r=>(r.clientName+r.offer+r.ref+r.id+r.phone).toLowerCase().includes(q));
+  if(t) list=list.filter(r=>r.type===t);
+  if(s) list=list.filter(r=>r.status===s);
+  return list;
+}
+
+function renderStats(){
+  const all=DB.get('az_reservations');
+  const items=[
+    {lbl:'Total',icon:'📋',val:all.length},
+    {lbl:'En attente',icon:'⏳',val:all.filter(r=>r.status==='pending').length},
+    {lbl:'Confirmées',icon:'✅',val:all.filter(r=>r.status==='confirmed').length},
+    {lbl:'Terminées',icon:'🏁',val:all.filter(r=>r.status==='done').length},
+    {lbl:'Annulées',icon:'❌',val:all.filter(r=>r.status==='cancelled').length},
+  ];
+  document.getElementById('statsRow').innerHTML=items.map(i=>`<div class="kpi"><div><div class="kpi-lbl">${i.lbl}</div><div class="kpi-val">${i.val}</div></div><div style="font-size:1.3rem">${i.icon}</div></div>`).join('');
+}
+
+function render(){
+  const list=getFiltered();
+  const tbody=document.getElementById('resTbody');
+  const empty=document.getElementById('emptyMsg');
+  document.getElementById('countLbl').textContent=list.length+' réservation(s)';
+  if(!list.length){tbody.innerHTML='';empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  tbody.innerHTML=list.map(r=>`<tr>
+    <td><code style="font-size:.74rem;color:var(--primary)">${r.ref||r.id}</code></td>
+    <td><strong>${r.clientName}</strong><br><span style="font-size:.72rem;color:var(--muted-fg)">${r.city||''}</span></td>
+    <td style="font-size:.8rem">${r.phone}<br><span style="font-size:.72rem;color:var(--muted-fg)">${r.email||''}</span></td>
+    <td style="font-size:.82rem;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.offer}</td>
+    <td style="font-size:.82rem">${typeLabel(r.type)}</td>
+    <td style="text-align:center">${r.persons||1}</td>
+    <td style="font-size:.8rem">${r.createdAt}</td>
+    <td>${statusBadge(r.status)}</td>
+    <td><div class="act-btns">
+      <button class="btn-a ba-view" onclick="viewR('${r.id}')">👁</button>
+      <button class="btn-a ba-edit" onclick="viewR('${r.id}')">✏️</button>
+      <button class="btn-a ba-del" onclick="delR('${r.id}')">🗑</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function viewR(id){
+  const r=DB.get('az_reservations').find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('mTitle').textContent='Réservation '+(r.ref||r.id);
+  document.getElementById('mBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem">
+      ${[['Client',r.clientName],['Téléphone',r.phone],['Email',r.email||'—'],['Ville',r.city||'—'],['Service',typeLabel(r.type)],['Offre',r.offer],['Personnes',r.persons||1],['Date souhaitée',r.date],['Créé le',r.createdAt]].map(([l,v])=>`
+      <div style="background:var(--secondary);padding:.8rem;border-radius:var(--radius)">
+        <div style="font-size:.7rem;color:var(--muted-fg);margin-bottom:2px">${l}</div>
+        <div style="font-weight:600;font-size:.87rem">${v}</div>
+      </div>`).join('')}
+    </div>
+    ${r.notes?`<div style="background:var(--secondary);padding:.8rem;border-radius:var(--radius);margin-bottom:1rem"><div style="font-size:.7rem;color:var(--muted-fg);margin-bottom:4px">Remarques</div><div style="font-size:.87rem">${r.notes}</div></div>`:''}
+    <div style="margin-bottom:1rem">${statusBadge(r.status)}</div>
+    <label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Changer le statut</label>
+    <select class="form-control form-select" id="statSel" style="margin-bottom:1rem">
+      <option value="pending" ${r.status==='pending'?'selected':''}>En attente</option>
+      <option value="confirmed" ${r.status==='confirmed'?'selected':''}>Confirmée</option>
+      <option value="done" ${r.status==='done'?'selected':''}>Terminée</option>
+      <option value="cancelled" ${r.status==='cancelled'?'selected':''}>Annulée</option>
+    </select>
+    <div style="display:flex;gap:.8rem">
+      <button class="btn-submit" style="flex:1" onclick="saveStatus('${r.id}')">Enregistrer</button>
+      <button class="btn btn-ghost btn-sm" onclick="printRes('${r.id}')">PDF</button>
+    </div>`;
+  openM();
+}
+
+function saveStatus(id){
+  const ns=document.getElementById('statSel').value;
+  const list=DB.get('az_reservations');
+  const idx=list.findIndex(r=>r.id===id);
+  if(idx>-1){list[idx].status=ns;DB.set('az_reservations',list);}
+  closeM();renderStats();render();
+}
+function delR(id){
+  if(!confirm('Supprimer cette réservation ?')) return;
+  DB.set('az_reservations',DB.get('az_reservations').filter(r=>r.id!==id));
+  renderStats();render();
+}
+function printRes(id){
+  const r=DB.get('az_reservations').find(x=>x.id===id);
+  if(r) generatePDF(r);
+}
+function exportCSV(){
+  const list=getFiltered();
+  const h=['Réf','Client','Téléphone','Email','Ville','Type','Offre','Personnes','Date','Statut','Prix'];
+  const rows=list.map(r=>[r.ref||r.id,r.clientName,r.phone,r.email||'',r.city||'',typeLabel(r.type),r.offer,r.persons||1,r.createdAt,r.status,r.price||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const csv=[h.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='reservations_aziza_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function openM(){document.getElementById('mo').classList.add('open');}
+function closeM(){document.getElementById('mo').classList.remove('open');}
+document.getElementById('mo').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+function logout(){localStorage.removeItem('az_auth');localStorage.removeItem('az_user');location.href='login.html';}
+renderStats();render();
+</script>
+</body>
+</html>

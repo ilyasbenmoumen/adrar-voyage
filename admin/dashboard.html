@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="alternate icon" href="../assets/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/favicon-32.png">
+  <title>Tableau de Bord — Admin Aziza Voyage</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="admin-sidebar">
+  <div class="sidebar-top">✈ <span>Aziza</span> Admin</div>
+  <nav class="sidebar-nav">
+    <div class="sb-sect">Principal</div>
+    <a href="dashboard.html" class="sb-link active">📊 Tableau de bord</a>
+    <a href="reservations.html" class="sb-link">📋 Réservations <span class="sb-badge" id="pendBadge">0</span></a>
+    <a href="clients.html" class="sb-link">👥 Clients</a>
+    <a href="offres.html" class="sb-link">✈ Offres de voyage</a>
+    <div class="sb-sect">Compte</div>
+    <a href="#" class="sb-link" onclick="logout()">🚪 Déconnexion</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="sb-user"><div class="sb-av" id="sbAv">A</div><div><div class="sb-name" id="sbName">Admin</div><div class="sb-role" id="sbRole">Administrateur</div></div></div>
+  </div>
+</aside>
+<main class="admin-main">
+  <div class="admin-topbar">
+    <h1>Tableau de Bord</h1>
+    <div class="topbar-right">
+      <span style="font-size:.82rem;color:var(--muted-fg)" id="dateStr"></span>
+      <button class="notif"><span style="font-size:1rem">🔔</span><span class="notif-dot"></span></button>
+      <a href="../index.html" style="font-size:.82rem;color:var(--primary);font-weight:600">← Site public</a>
+    </div>
+  </div>
+  <div class="admin-content">
+    <div class="kpi-row" id="kpiRow"></div>
+    <div class="table-card">
+      <div class="table-head"><div class="table-title">Répartition par service</div></div>
+      <div id="typeStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem"></div>
+    </div>
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">Dernières réservations</div>
+        <a href="reservations.html" class="btn-add" style="text-decoration:none">Voir tout →</a>
+      </div>
+      <div style="overflow-x:auto"><table class="dt"><thead><tr><th>Réf.</th><th>Client</th><th>Offre</th><th>Type</th><th>Date</th><th>Statut</th></tr></thead><tbody id="recentTbody"></tbody></table></div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="../js/main.js"></script>
+<script>
+if(localStorage.getItem('az_auth')!=='1') location.href='login.html';
+const user=JSON.parse(localStorage.getItem('az_user')||'{}');
+document.getElementById('sbAv').textContent=(user.name||'A')[0];
+document.getElementById('sbName').textContent=user.name||'Admin';
+document.getElementById('sbRole').textContent=user.role||'Administrateur';
+document.getElementById('dateStr').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+
+const res=DB.get('az_reservations');
+const pending=res.filter(r=>r.status==='pending').length;
+document.getElementById('pendBadge').textContent=pending;
+
+// KPIs
+const kpis=[
+  {lbl:'Total réservations',val:res.length,trend:'↑ Ce mois',icon:'📋',cls:'ki-blue'},
+  {lbl:'En attente',val:pending,trend:'À traiter',icon:'⏳',cls:'ki-gold'},
+  {lbl:'Confirmées',val:res.filter(r=>r.status==='confirmed').length,trend:'↑ Validées',icon:'✅',cls:'ki-green'},
+  {lbl:'Terminées',val:res.filter(r=>r.status==='done').length,trend:'Complétées',icon:'🏁',cls:'ki-purple'},
+];
+document.getElementById('kpiRow').innerHTML=kpis.map(k=>`<div class="kpi"><div><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val">${k.val}</div><div class="kpi-trend">${k.trend}</div></div><div class="kpi-icon ${k.cls}" style="font-size:1.3rem">${k.icon}</div></div>`).join('');
+
+// Type stats
+const types={europe:{lbl:'Europe',color:'#2e5c6e'},indonesia:{lbl:'Indonésie',color:'#16a34a'},omra:{lbl:'Omra',color:'#7c3aed'},hajj:{lbl:'Hajj',color:'#dc2626'},visa:{lbl:'Visa',color:'#c9a84c'}};
+const ts=document.getElementById('typeStats');
+Object.entries(types).forEach(([k,v])=>{
+  const cnt=res.filter(r=>r.type===k).length;
+  const pct=res.length?Math.round(cnt/res.length*100):0;
+  ts.innerHTML+=`<div style="background:var(--secondary);border-radius:var(--radius);padding:1rem;border-left:4px solid ${v.color}">
+    <div style="font-weight:700;font-size:1.4rem;color:var(--fg)">${cnt}</div>
+    <div style="font-size:.8rem;color:var(--muted-fg);margin-bottom:.5rem">${v.lbl} · ${pct}%</div>
+    <div style="height:4px;background:var(--border);border-radius:2px"><div style="height:4px;width:${pct}%;background:${v.color};border-radius:2px"></div></div>
+  </div>`;
+});
+
+// Recent
+document.getElementById('recentTbody').innerHTML=res.slice(0,8).map(r=>`<tr>
+  <td><code style="font-size:.75rem;color:var(--primary)">${r.ref||r.id}</code></td>
+  <td><strong>${r.clientName}</strong></td>
+  <td style="font-size:.83rem;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.offer}</td>
+  <td>${typeLabel(r.type)}</td>
+  <td style="font-size:.82rem">${r.createdAt}</td>
+  <td>${statusBadge(r.status)}</td>
+</tr>`).join('');
+
+function logout(){localStorage.removeItem('az_auth');localStorage.removeItem('az_user');location.href='login.html';}
+</script>
+</body>
+</html>

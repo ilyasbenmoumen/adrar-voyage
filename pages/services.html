@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="alternate icon" href="../assets/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/favicon-32.png">
+  <title>Services & Voyages — Aziza Voyage</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Extra styles for services page */
+    .svc-hero-mini{background:linear-gradient(135deg,#1a2332,#2e5c6e);padding:clamp(90px,12vw,130px) 5% 50px;text-align:center;color:#fff}
+    .svc-hero-mini h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;margin-bottom:.6rem}
+    .svc-hero-mini p{color:rgba(255,255,255,.72);font-size:.98rem;max-width:480px;margin:0 auto}
+    .offer-detail-row{display:flex;gap:1.2rem;align-items:center;margin-bottom:6px;font-size:.83rem;color:var(--muted-fg)}
+    .step-extra{background:var(--secondary);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.85rem;color:var(--muted-fg);border-left:3px solid var(--gold)}
+    /* Travelers picker inline */
+    .tpick{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content}
+    .tpick-btn{width:36px;height:36px;border:none;background:var(--secondary);color:var(--fg);font-size:1.1rem;cursor:pointer;transition:.2s}
+    .tpick-btn:hover{background:var(--muted)}
+    .tpick-val{min-width:44px;text-align:center;font-weight:700;font-size:.95rem;padding:0 6px;line-height:36px}
+    /* Summary card */
+    .summary-card{background:var(--secondary);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
+    .summary-card .sum-name{font-family:'Playfair Display',serif;font-weight:700;color:var(--primary);font-size:1rem}
+    .summary-card .sum-price{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:var(--primary)}
+    .sum-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--gold);font-weight:700;margin-bottom:2px}
+    /* Form grid 2col */
+    .fg2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:600px){.fg2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="../index.html" class="nav-brand">
+    <div class="nav-brand" style="gap:10px">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fdfcf9"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      </div>
+      Aziza Voyage
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="../index.html" class="nav-link">Accueil</a>
+    <a href="services.html" class="nav-link active">Services & Voyages</a>
+    <a href="apropos.html" class="nav-link">À Propos</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+  <div class="nav-right">
+    <button class="hamburger" id="burger"></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" class="mobile-link">Accueil</a>
+  <a href="services.html" class="mobile-link active">Services & Voyages</a>
+  <a href="apropos.html" class="mobile-link">À Propos</a>
+  <a href="contact.html" class="mobile-link">Contact</a>
+</div>
+
+<!-- PAGE HERO -->
+<div class="svc-hero-mini">
+  <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 14px;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e8c96a;margin-bottom:1rem">
+    ✦ Services & Voyages
+  </div>
+  <h1>Réservez votre voyage</h1>
+  <p>Choisissez votre service et suivez les étapes pour réserver en quelques clics.</p>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper" id="stepper">
+  <div class="step-item active" id="st1">
+    <div class="step-num"><span>1</span></div>
+    <div class="step-label">Choisir le service</div>
+  </div>
+  <div class="step-line" id="sl1"></div>
+  <div class="step-item" id="st2">
+    <div class="step-num"><span>2</span></div>
+    <div class="step-label">Choisir une offre</div>
+  </div>
+  <div class="step-line" id="sl2"></div>
+  <div class="step-item" id="st3">
+    <div class="step-num"><span>3</span></div>
+    <div class="step-label">Vos informations</div>
+  </div>
+  <div class="step-line" id="sl3"></div>
+  <div class="step-item" id="st4">
+    <div class="step-num"><span>4</span></div>
+    <div class="step-label">Confirmation</div>
+  </div>
+</div>
+
+<!-- ── STEP 1: Choose service ── -->
+<div id="sec1">
+  <div style="background:var(--secondary);padding:3rem 5%">
+    <p style="text-align:center;font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--primary);margin-bottom:2rem;font-weight:700">Quel type de voyage vous intéresse ?</p>
+    <div class="svc-tabs" id="svcTabs">
+      <div class="svc-tab" data-s="europe" onclick="selectService('europe')">
+        <img src="../assets/dest-europe.jpg" alt="Europe" loading="lazy">
+        <div class="tab-overlay"></div>
+        <div class="tab-label">Voyages<br>Europe</div>
+      </div>
+      <div class="svc-tab" data-s="indonesia" onclick="selectService('indonesia')">
+        <img src="../assets/dest-indonesia.jpg" alt="Indonésie" loading="lazy">
+        <div class="tab-overlay"></div>
+        <div class="tab-label">Voyages<br>Indonésie</div>
+      </div>
+      <div class="svc-tab" data-s="omra" onclick="selectService('omra')">
+        <img src="../assets/dest-omra.jpg" alt="Omra" loading="lazy">
+        <div class="tab-overlay"></div>
+        <div class="tab-label">Omra</div>
+      </div>
+      <div class="svc-tab" data-s="hajj" onclick="selectService('hajj')">
+        <img src="../assets/hero-mecca.jpg" alt="Hajj" loading="lazy">
+        <div class="tab-overlay"></div>
+        <div class="tab-label">Hajj</div>
+      </div>
+      <div class="svc-tab" data-s="visa" onclick="selectService('visa')">
+        <img src="../assets/dest-visa.jpg" alt="Visa" loading="lazy">
+        <div class="tab-overlay"></div>
+        <div class="tab-label">Demande<br>de Visa</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 2: Choose offer ── -->
+<div id="sec2" class="hidden">
+  <div class="offers-section">
+    <div class="offers-header">
+      <div>
+        <div class="sec-label" id="offerLabel">✦</div>
+        <h2 class="sec-title" id="offerTitle">Choisissez une offre</h2>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="goToStep(1)">← Retour</button>
+    </div>
+    <div class="offers-grid" id="offersGrid"></div>
+  </div>
+</div>
+
+<!-- ── STEP 3: Booking form ── -->
+<div id="sec3" class="hidden">
+  <div class="booking-wrap">
+    <button class="btn-back-ghost" onclick="goToStep(2)">← Choisir une autre offre</button>
+    <div class="booking-card">
+      <div class="booking-banner" id="bannerWrap">
+        <img id="bannerImg" src="" alt="">
+        <div class="booking-banner-overlay"></div>
+        <div class="booking-banner-info">
+          <div class="service-tag" id="bannerType"></div>
+          <h2 id="bannerName"></h2>
+        </div>
+      </div>
+      <div class="booking-form-body">
+        <div class="summary-card">
+          <div>
+            <div class="sum-tag" id="sumType"></div>
+            <div class="sum-name" id="sumName"></div>
+            <div style="font-size:.82rem;color:var(--muted-fg);margin-top:3px" id="sumDur"></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.72rem;color:var(--muted-fg)">À partir de</div>
+            <div class="sum-price" id="sumPrice"></div>
+            <div style="font-size:.72rem;color:var(--muted-fg)">/pers.</div>
+          </div>
+        </div>
+
+        <h3>Vos informations</h3>
+        <p class="sub">Remplissez ce formulaire — notre équipe vous recontacte sous 24h.</p>
+
+        <form id="bookingForm" onsubmit="submitForm(event)">
+          <div class="fg2" style="margin-bottom:1rem">
+            <div class="form-group">
+              <label>Prénom *</label>
+              <input class="form-control" name="prenom" placeholder="Votre prénom" required>
+            </div>
+            <div class="form-group">
+              <label>Nom *</label>
+              <input class="form-control" name="nom" placeholder="Votre nom" required>
+            </div>
+          </div>
+          <div class="fg2" style="margin-bottom:1rem">
+            <div class="form-group">
+              <label>Téléphone *</label>
+              <input class="form-control" name="phone" type="tel" placeholder="+212 6XX XXX XXX" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input class="form-control" name="email" type="email" placeholder="votre@email.com">
+            </div>
+          </div>
+          <div class="fg2" style="margin-bottom:1rem">
+            <div class="form-group">
+              <label>Ville de départ</label>
+              <select class="form-control form-select" name="ville">
+                <option value="">Sélectionner...</option>
+                <option>Casablanca</option><option>Rabat</option><option>Marrakech</option>
+                <option>Fès</option><option>Tanger</option><option>Agadir</option>
+                <option>Meknès</option><option>Oujda</option><option>Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date souhaitée *</label>
+              <input class="form-control" name="date" type="date" required>
+            </div>
+          </div>
+
+          <!-- Travelers picker -->
+          <div class="form-group" style="margin-bottom:1rem">
+            <label>Nombre de voyageurs *</label>
+            <div style="display:flex;align-items:center;gap:1rem;margin-top:6px">
+              <div class="tpick">
+                <button type="button" class="tpick-btn" onclick="changeTravelers(-1)">−</button>
+                <div class="tpick-val" id="travelersVal">1</div>
+                <button type="button" class="tpick-btn" onclick="changeTravelers(1)">+</button>
+              </div>
+              <input type="hidden" name="persons" id="personsInput" value="1">
+              <span style="font-size:.82rem;color:var(--muted-fg)">Total estimé : <strong id="totalPrice" style="color:var(--primary)">—</strong></span>
+            </div>
+          </div>
+
+          <!-- Dynamic extra fields -->
+          <div id="extraFields" style="margin-bottom:1rem"></div>
+
+          <div class="form-group" style="margin-bottom:1.5rem">
+            <label>Remarques / Demandes spéciales</label>
+            <textarea class="form-control" name="notes" rows="3" placeholder="Besoins particuliers, questions..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Envoyer ma demande →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 4: Confirmation + PDF ── -->
+<div id="sec4" class="hidden">
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Demande envoyée !</h2>
+      <p>Notre équipe vous contactera dans les <strong>24 heures</strong> pour confirmer votre réservation et vous communiquer les prochaines étapes.</p>
+      <div class="confirm-ref" id="confirmRef">—</div>
+      <div class="confirm-actions">
+        <button class="btn-pdf" id="pdfBtn" onclick="downloadPDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+          Télécharger ma confirmation PDF
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="resetAll()">Nouvelle réservation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-logo">
+          <svg viewBox="0 0 24 24" fill="#c9a84c" style="width:20px;height:20px"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+          Aziza Voyage
+        </div>
+        <p>Votre partenaire de confiance pour des voyages d'exception.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li onclick="selectService('europe')">Voyages Europe</li>
+          <li onclick="selectService('indonesia')">Voyages Indonésie</li>
+          <li onclick="selectService('omra')">Omra</li>
+          <li onclick="selectService('hajj')">Hajj</li>
+          <li onclick="selectService('visa')">Demande de Visa</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li>Casablanca, Maroc</li>
+          <li>+212 6 72 94 59 59</li>
+          <li>contact@azizavoyage.ma</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Aziza Voyage. Tous droits réservés.</span>
+      <span>Agrément Ministère du Tourisme — Maroc</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/212672945959" target="_blank" class="wa-fab">
+  <svg viewBox="0 0 24 24" fill="#fff" style="width:22px;height:22px"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.86 11.86 0 018.413 3.488 11.82 11.82 0 013.48 8.413c-.003 6.554-5.338 11.89-11.893 11.89a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607z"/></svg>
+  <span>WhatsApp</span>
+</a>
+
+<script src="../js/main.js"></script>
+<script>
+let currentService=null, currentOffer=null, travelersCount=1, lastReservation=null;
+
+const svcMeta={
+  europe:{label:'✦ Voyages Europe',title:'Découvrez nos circuits européens'},
+  indonesia:{label:'✦ Voyages Indonésie',title:'Nos séjours en Indonésie & Asie'},
+  omra:{label:'✦ Forfaits Omra',title:'Choisissez votre forfait Omra'},
+  hajj:{label:'✦ Offres Hajj',title:'Nos offres Hajj 2026'},
+  visa:{label:'✦ Service Visa',title:'Demande de Visa — choisissez votre pays'}
+};
+
+const extraFieldsHtml={
+  europe:`<div class="fg2"><div class="form-group"><label>Durée préférée</label><select class="form-control form-select" name="duration"><option>Indifférente</option><option>5–7 jours</option><option>8–10 jours</option><option>+10 jours</option></select></div><div class="form-group"><label>Type de chambre</label><select class="form-control form-select" name="room"><option>Double</option><option>Individuelle</option><option>Triple</option></select></div></div>`,
+  indonesia:`<div class="fg2"><div class="form-group"><label>Durée préférée</label><select class="form-control form-select" name="duration"><option>Indifférente</option><option>7–10 jours</option><option>10–14 jours</option></select></div><div class="form-group"><label>Type de chambre</label><select class="form-control form-select" name="room"><option>Double</option><option>Individuelle</option><option>Triple</option></select></div></div>`,
+  omra:`<div class="fg2"><div class="form-group"><label>Mois souhaité</label><select class="form-control form-select" name="month"><option>Indifférent</option><option>Ramadan 2026</option><option>Rajab</option><option>Sha'ban</option><option>Dhul Hijja</option><option>Autre</option></select></div><div class="form-group"><label>Type de chambre</label><select class="form-control form-select" name="room"><option>Double</option><option>Triple</option><option>Quadruple</option></select></div></div><div class="step-extra" style="margin-top:.5rem">ℹ️ Les tarifs Omra peuvent varier selon la période. Notre équipe vous communiquera les disponibilités exactes.</div>`,
+  hajj:`<div class="fg2"><div class="form-group"><label>Nationalité du passeport</label><select class="form-control form-select" name="passport"><option>Marocaine</option><option>Européenne</option><option>Autre</option></select></div><div class="form-group"><label>Type de chambre</label><select class="form-control form-select" name="room"><option>Double</option><option>Triple</option><option>Quadruple</option></select></div></div><div class="step-extra" style="margin-top:.5rem">ℹ️ Les places Hajj sont limitées et soumises à attribution. Inscription anticipée fortement conseillée.</div>`,
+  visa:`<div class="fg2"><div class="form-group"><label>Pays de destination</label><select class="form-control form-select" name="country"><option>France</option><option>Espagne</option><option>Italie</option><option>Allemagne</option><option>USA</option><option>UK</option><option>Indonésie</option><option>Autre</option></select></div><div class="form-group"><label>Type de visa</label><select class="form-control form-select" name="visa_type"><option>Tourisme</option><option>Affaires</option><option>Famille</option><option>Étudiant</option></select></div></div><div class="step-extra" style="margin-top:.5rem">📋 Vous recevrez par email la liste complète des documents à fournir après confirmation de votre demande.</div>`
+};
+
+function goToStep(n){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('sec'+i).classList.add('hidden');
+    const st=document.getElementById('st'+i);
+    st.classList.remove('active','done');
+    if(i<n) st.classList.add('done');
+  });
+  // Update step lines
+  [1,2,3].forEach(i=>{
+    const sl=document.getElementById('sl'+i);
+    if(sl) sl.style.background=i<n?'var(--primary)':'var(--border)';
+  });
+  document.getElementById('sec'+n).classList.remove('hidden');
+  document.getElementById('st'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectService(s){
+  currentService=s;
+  document.querySelectorAll('.svc-tab').forEach(t=>t.classList.toggle('active',t.dataset.s===s));
+  const meta=svcMeta[s];
+  document.getElementById('offerLabel').textContent=meta.label;
+  document.getElementById('offerTitle').textContent=meta.title;
+  renderOffers(s);
+  goToStep(2);
+}
+
+function renderOffers(type){
+  const offers=OFFERS.filter(o=>o.type===type);
+  const grid=document.getElementById('offersGrid');
+  grid.innerHTML=offers.map(o=>`
+    <div class="offer-card${o.popular?' popular':''}" onclick="selectOffer('${o.id}')">
+      ${o.popular?`<div class="popular-badge"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Le plus populaire</div>`:''}
+      <div class="offer-img">
+        <img src="${o.img}" alt="${o.name}" loading="lazy">
+        <div class="offer-img-overlay"></div>
+      </div>
+      <div class="offer-body">
+        <div class="offer-service-tag">${o.tag}</div>
+        <div class="offer-name">${o.name}</div>
+        <div class="offer-price-row">
+          <div class="offer-from">À partir de</div>
+          <div class="offer-price">${o.price.toLocaleString('fr-MA')}<sup>MAD</sup></div>
+        </div>
+        <ul class="offer-features">
+          ${o.features.map(f=>`<li><span class="feat-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><polyline points="20 6 9 17 4 12"/></svg></span>${f}</li>`).join('')}
+        </ul>
+        <button class="btn btn-${o.popular?'gold':'primary'} btn-sm" style="width:100%;justify-content:center" onclick="event.stopPropagation();selectOffer('${o.id}')">Sélectionner →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectOffer(id){
+  currentOffer=OFFERS.find(o=>o.id===id);
+  if(!currentOffer) return;
+  travelersCount=1;
+  document.getElementById('travelersVal').textContent='1';
+  document.getElementById('personsInput').value='1';
+  // Banner
+  document.getElementById('bannerImg').src=currentOffer.img;
+  document.getElementById('bannerType').textContent=svcMeta[currentService].label.replace('✦ ','');
+  document.getElementById('bannerName').textContent=currentOffer.name;
+  // Summary
+  document.getElementById('sumType').textContent=currentOffer.tag;
+  document.getElementById('sumName').textContent=currentOffer.name;
+  document.getElementById('sumDur').textContent=currentOffer.duration!=='Service'?'Durée : '+currentOffer.duration:'';
+  document.getElementById('sumPrice').textContent=currentOffer.price.toLocaleString('fr-MA')+' MAD';
+  document.getElementById('totalPrice').textContent=currentOffer.price.toLocaleString('fr-MA')+' MAD';
+  // Extra fields
+  document.getElementById('extraFields').innerHTML=extraFieldsHtml[currentService]||'';
+  goToStep(3);
+}
+
+function changeTravelers(delta){
+  travelersCount=Math.max(1,Math.min(20,travelersCount+delta));
+  document.getElementById('travelersVal').textContent=travelersCount;
+  document.getElementById('personsInput').value=travelersCount;
+  if(currentOffer) document.getElementById('totalPrice').textContent=(currentOffer.price*travelersCount).toLocaleString('fr-MA')+' MAD';
+}
+
+function submitForm(e){
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  const d=Object.fromEntries(fd);
+  const ref=genRef();
+  const res={
+    id:'RES'+Date.now(),ref,
+    clientName:d.prenom+' '+d.nom,
+    phone:d.phone,email:d.email||'',
+    city:d.ville||'',type:currentService,
+    offer:currentOffer.name,price:currentOffer.price,
+    duration:currentOffer.duration,
+    persons:travelersCount,
+    date:d.date,status:'pending',
+    notes:d.notes||'',
+    createdAt:new Date().toLocaleDateString('fr-FR')
+  };
+  // Save to localStorage
+  const list=DB.get('az_reservations');
+  list.unshift(res);
+  DB.set('az_reservations',list);
+  lastReservation=res;
+  document.getElementById('confirmRef').textContent='N° Réservation : '+ref;
+  goToStep(4);
+}
+
+function downloadPDF(){
+  if(lastReservation) generatePDF(lastReservation);
+}
+
+function resetAll(){
+  currentService=null; currentOffer=null; travelersCount=1; lastReservation=null;
+  document.getElementById('bookingForm').reset();
+  document.querySelectorAll('.svc-tab').forEach(t=>t.classList.remove('active'));
+  goToStep(1);
+  // Reset stepper lines
+  [1,2,3].forEach(i=>{const sl=document.getElementById('sl'+i);if(sl)sl.style.background='var(--border)';});
+}
+
+// Init from URL param
+window.addEventListener('DOMContentLoaded',()=>{
+  const s=new URLSearchParams(location.search).get('s');
+  if(s&&['europe','indonesia','omra','hajj','visa'].includes(s)){
+    selectService(s);
+  }
+});
+</script>
+</body>
+</html>
