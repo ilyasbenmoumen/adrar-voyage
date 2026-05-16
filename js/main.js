@@ -69,7 +69,7 @@ function seedData(){
   if(localStorage.getItem('az_seeded2')) return;
   const firstN=['Fatima','Ahmed','Khadija','Mohammed','Youssef','Aïcha','Hamid','Nadia','Omar','Zineb','Hassan','Meryem','Rachid','Soukaina','Karim'];
   const lastN=['Benali','El Amrani','Tazi','Ouali','Chraibi','Mansouri','Benhaddou','Lahlou','Idrissi','Saidi','Berrada','Filali'];
-  const cities=['Casablanca','Rabat','Marrakech','Fès','Tanger','Agadir','Meknès','Oujda'];
+  const cities=['Marrakech','Rabat','Marrakech','Fès','Tanger','Agadir','Meknès','Oujda'];
   const statuses=['pending','pending','pending','confirmed','confirmed','done','cancelled'];
   const types=['europe','indonesia','omra','hajj','visa'];
   const offerNames={europe:['Paris–Rome 7 jours','Tour d\'Espagne 10 jours','City-break Istanbul 5 jours'],indonesia:['Bali Découverte 9 jours','Combiné Bali + Java 12 jours'],omra:['Omra Économique 10 jours','Omra Standard 12 jours','Omra Premium 14 jours'],hajj:['Hajj Standard 2026','Hajj VIP 2026'],visa:['Visa Schengen','Visa USA / UK','Visa Touristique Asie']};
@@ -191,7 +191,7 @@ function generatePDF(data){
   </style></head><body>
   <div class="page">
     <div class="hdr">
-      <div class="brand">✈ <span>Aziza</span> Voyage</div>
+      <div class="brand">✈ <span>Adrar</span> Voyage</div>
       <div class="hdr-right">
         <div class="lbl">N° Réservation</div>
         <div class="val">${ref}</div>
@@ -220,8 +220,8 @@ function generatePDF(data){
     ${notes?`<div class="notes-box"><div class="lbl">Remarques</div><div>${notes}</div></div>`:''}
     <div class="ftr">
       <div class="ftr-left">
-        <strong style="color:#1a2332;display:block;margin-bottom:4px">Aziza Voyage</strong>
-        Casablanca, Maroc<br>+212 6 72 94 59 59<br>contact@azizavoyage.ma<br>
+        <strong style="color:#1a2332;display:block;margin-bottom:4px">Adrar Voyage</strong>
+        Marrakech, Maroc<br>+212 6 72 94 59 59<br>contact@adravoyage.ma<br>
         <span style="font-size:.7rem;color:#c9a84c">Agrément Ministère du Tourisme — Maroc</span>
       </div>
       <div class="ftr-right">

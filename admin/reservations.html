@@ -5,13 +5,13 @@
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="alternate icon" href="../assets/favicon.ico">
   <link rel="apple-touch-icon" href="../assets/favicon-32.png">
-  <title>Réservations — Admin Aziza Voyage</title>
+  <title>Réservations — Admin Adrar Voyage</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="admin-layout">
 <aside class="admin-sidebar">
-  <div class="sidebar-top">✈ <span>Aziza</span> Admin</div>
+  <div class="sidebar-top">✈ <span>Adrar</span> Admin</div>
   <nav class="sidebar-nav">
     <div class="sb-sect">Principal</div>
     <a href="dashboard.html" class="sb-link">📊 Tableau de bord</a>
@@ -176,7 +176,7 @@ function exportCSV(){
   const h=['Réf','Client','Téléphone','Email','Ville','Type','Offre','Personnes','Date','Statut','Prix'];
   const rows=list.map(r=>[r.ref||r.id,r.clientName,r.phone,r.email||'',r.city||'',typeLabel(r.type),r.offer,r.persons||1,r.createdAt,r.status,r.price||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
   const csv=[h.join(','),...rows].join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='reservations_aziza_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='reservations_adrar_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 function openM(){document.getElementById('mo').classList.add('open');}
 function closeM(){document.getElementById('mo').classList.remove('open');}

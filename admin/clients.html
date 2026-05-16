@@ -7,7 +7,7 @@
 <body>
 <div class="admin-layout">
 <aside class="admin-sidebar">
-  <div class="sidebar-top">✈ <span>Aziza</span> Admin</div>
+  <div class="sidebar-top">✈ <span>Adrar</span> Admin</div>
   <nav class="sidebar-nav">
     <div class="sb-sect">Principal</div>
     <a href="dashboard.html" class="sb-link">📊 Tableau de bord</a>
@@ -95,7 +95,7 @@ function exportC(){
   const h=['Nom','Email','Téléphone','Ville','Réservations'];
   const rows=clients.map(c=>[c.name,c.email||'',c.phone,c.city||'',c.list.length].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
   const csv=[h.join(','),...rows].join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='clients_aziza.csv';a.click();
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='clients_adrar.csv';a.click();
 }
 function openM(){document.getElementById('mo').classList.add('open');}
 function closeM(){document.getElementById('mo').classList.remove('open');}
